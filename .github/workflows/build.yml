@@ -35,7 +35,7 @@ jobs:
           make -j2 download world
 
       - name: Upload firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: wrt1900acv1-firmware
           path: openwrt/bin/targets/mvebu/cortexa9/*.bin
