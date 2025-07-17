@@ -10,34 +10,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y build-essential libncurses5-dev gawk git gettext \
-            libssl-dev xsltproc unzip zlib1g-dev python3-distutils subversion
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache ecj fastjar file g++ gawk \
+            gettext git java-propose-classpath libelf-dev libncurses5-dev \
+            libncursesw5-dev libssl-dev python3 unzip wget \
+            zlib1g-dev python3-distutils rsync
 
       - name: Clone OpenWrt
         run: |
-          git clone https://git.openwrt.org/openwrt/openwrt.git
-          run: |
-    cd openwrt
-    ./scripts/feeds update -a
-    ./scripts/feeds install -a
-    make defconfig
-    make -j1 V=s
+          git clone --depth 1 https://git.openwrt.org/openwrt/openwrt.git openwrt
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          cp ../.config .config
+          make defconfig
 
-      - name: Copy Config
-        run: |
-          cp ../.config openwrt/.config
-
-      - name: Build
+      - name: Build firmware
         run: |
           cd openwrt
-          make defconfig
-          make -j2 download world
+          make -j$(nproc) V=s
 
       - name: Upload firmware
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: wrt1900acv1-firmware
-          path: openwrt/bin/targets/mvebu/cortexa9/*.bin
+          name: OpenWrt-WRT1900ACv1
+          path: openwrt/bin/targets/
