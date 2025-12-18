@@ -24,7 +24,7 @@ jobs:
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          cp ../.config .config
+          cp ../optimized-wrt1900acv1.config .config
           make defconfig
 
       - name: Build firmware
